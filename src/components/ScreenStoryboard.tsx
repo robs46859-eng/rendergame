@@ -149,6 +149,14 @@ export default function ScreenStoryboard({ onNavigate }: ScreenStoryboardProps) 
           <h1 className="font-headline text-6xl font-bold tracking-tighter italic">RENDER</h1>
           <div className="w-24 h-1 bg-primary mt-2" />
           <p className="font-label text-outline text-[10px] tracking-widest mt-4 uppercase">SYSTEM INITIALIZATION COMPLETE</p>
+          
+          <button 
+            onClick={() => onNavigate('EXPLORATION', 'push')}
+            className="mt-8 bg-primary text-on-primary py-3 px-8 font-label text-sm tracking-widest uppercase font-bold hover:bg-primary/80 transition-all flex items-center gap-3 group"
+          >
+            <span className="material-symbols-outlined group-hover:rotate-90 transition-transform">explore</span>
+            Enter Exploration Mode
+          </button>
         </div>
       </section>
 

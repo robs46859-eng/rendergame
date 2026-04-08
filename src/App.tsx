@@ -7,6 +7,10 @@ import ScreenRefuge from './components/ScreenRefuge';
 import ScreenCircle from './components/ScreenCircle';
 import ScreenLegacy from './components/ScreenLegacy';
 import ScreenPodcast from './components/ScreenPodcast';
+import ExplorationView from './components/ExplorationView';
+import DialogueOverlay from './components/DialogueOverlay';
+import ButterflyEffect from './components/ButterflyEffect';
+import { GameProvider } from './contexts/GameContext';
 
 export default function App() {
   const [navState, setNavState] = useState<NavigationState>({
@@ -17,7 +21,6 @@ export default function App() {
 
   const navigate = useCallback((screen: Screen, transition: TransitionType = 'none') => {
     setNavState(prev => {
-      // Don't navigate to the same screen
       if (prev.currentScreen === screen) return prev;
 
       const newHistory = transition === 'push' 
@@ -38,6 +41,8 @@ export default function App() {
     switch (navState.currentScreen) {
       case 'STORYBOARD':
         return <ScreenStoryboard onNavigate={navigate} />;
+      case 'EXPLORATION':
+        return <ExplorationView />;
       case 'REFUGE':
         return <ScreenRefuge onNavigate={navigate} />;
       case 'CIRCLE':
@@ -72,23 +77,28 @@ export default function App() {
   const currentVariant = variants[navState.transition] || variants.none;
 
   return (
-    <Layout 
-      currentScreen={navState.currentScreen} 
-      onNavigate={navigate}
-      caseFile={navState.currentScreen === 'STORYBOARD' ? "882-04" : navState.currentScreen === 'PODCAST' ? "8421-X" : "882-04"}
-    >
-      <AnimatePresence mode="wait" initial={false}>
-        <motion.div
-          key={navState.currentScreen}
-          initial={currentVariant.initial}
-          animate={currentVariant.animate}
-          exit={currentVariant.exit}
-          transition={{ type: 'spring', damping: 25, stiffness: 200 }}
-          className="w-full"
-        >
-          {renderScreen()}
-        </motion.div>
-      </AnimatePresence>
-    </Layout>
+    <GameProvider>
+      <Layout 
+        currentScreen={navState.currentScreen} 
+        onNavigate={navigate}
+        caseFile={navState.currentScreen === 'STORYBOARD' ? "882-04" : navState.currentScreen === 'PODCAST' ? "8421-X" : "882-04"}
+      >
+        <ButterflyEffect />
+        <DialogueOverlay />
+        
+        <AnimatePresence mode="wait" initial={false}>
+          <motion.div
+            key={navState.currentScreen}
+            initial={currentVariant.initial}
+            animate={currentVariant.animate}
+            exit={currentVariant.exit}
+            transition={{ type: 'spring', damping: 25, stiffness: 200 }}
+            className="w-full"
+          >
+            {renderScreen()}
+          </motion.div>
+        </AnimatePresence>
+      </Layout>
+    </GameProvider>
   );
 }
