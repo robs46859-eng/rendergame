@@ -1,0 +1,46 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // ===============================================================
+    // Assumed Data Model
+    // ===============================================================
+    //
+    // Collection: sessions
+    // Document ID: sessionId (random string)
+    // Fields:
+    //   - caseId: string (required)
+    //   - unlockedSteps: list of strings (required)
+    //   - activeUsers: map (required)
+    //   - createdAt: timestamp (required)
+    //   - lastActivity: timestamp (required)
+    //
+    // ===============================================================
+
+    // Helper Functions
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+
+    function isValidSession(data) {
+      return data.keys().hasAll(['caseId', 'unlockedSteps', 'activeUsers', 'createdAt', 'lastActivity']) &&
+             data.caseId is string &&
+             data.unlockedSteps is list &&
+             data.activeUsers is map &&
+             data.createdAt is timestamp &&
+             data.lastActivity is timestamp;
+    }
+
+    match /sessions/{sessionId} {
+      // Anyone authenticated can read a session if they have the ID
+      allow read: if isAuthenticated();
+      
+      // Anyone authenticated can create a new session
+      allow create: if isAuthenticated() && isValidSession(request.resource.data);
+      
+      // Anyone authenticated can update a session (joining or unlocking steps)
+      // In a real app, we might restrict this to participants, but for a game
+      // with shared IDs, this is the expected behavior.
+      allow update: if isAuthenticated() && isValidSession(request.resource.data);
+    }
+  }
+}

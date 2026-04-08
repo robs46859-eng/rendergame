@@ -1,0 +1,33 @@
+{
+  "entities": {
+    "Session": {
+      "title": "Session",
+      "description": "A collaborative investigation session",
+      "type": "object",
+      "properties": {
+        "caseId": { "type": "string", "description": "The ID of the case being investigated" },
+        "unlockedSteps": { "type": "array", "description": "List of step IDs unlocked by the group" },
+        "activeUsers": { "type": "object", "description": "Map of user IDs to presence data" },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "lastActivity": { "type": "string", "format": "date-time" }
+      },
+      "required": ["caseId", "createdAt"]
+    },
+    "User": {
+      "title": "User",
+      "description": "A player in the investigation",
+      "type": "object",
+      "properties": {
+        "displayName": { "type": "string" },
+        "photoURL": { "type": "string" },
+        "role": { "type": "string", "enum": ["analyst", "field_agent", "architect"] }
+      }
+    }
+  },
+  "firestore": {
+    "/sessions/{sessionId}": {
+      "schema": "Session",
+      "description": "Active investigation sessions"
+    }
+  }
+}
